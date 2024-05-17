@@ -7,6 +7,43 @@
 
 namespace RaceCompatibilityCondition {
 
+namespace PapyrusExtension {
+
+constexpr auto SCRIPT_NAMESPACE = "RaceCompatibilityCondition"sv;
+
+// Papyrus Function
+constexpr auto FN_GET_RACE_ACTOR_BASE = "GetRaceActorBase"sv;
+auto GetRaceActorBase(
+    RE::StaticFunctionTag*,
+    const RE::TESNPC* actor) -> RE::TESRace*
+{
+  if (actor) {
+    return actor->race;
+  }
+  return nullptr;
+}
+
+// Papyrus Function
+constexpr auto FN_GET_RACE_ACTOR = "GetRaceActor"sv;
+auto GetRaceActor(
+    RE::StaticFunctionTag*,
+    const RE::Actor* actor) -> RE::TESRace*
+{
+  if (actor) {
+    return actor->GetActorRuntimeData().race;
+  }
+  return nullptr;
+}
+
+static auto register_functions(RE::BSScript::IVirtualMachine* vm) -> bool
+{
+  vm->RegisterFunction(FN_GET_RACE_ACTOR_BASE, SCRIPT_NAMESPACE, GetRaceActorBase, vm);
+  vm->RegisterFunction(FN_GET_RACE_ACTOR, SCRIPT_NAMESPACE, GetRaceActor, vm);
+  return true;
+}
+
+}
+
 namespace Serialization {
 
 static constexpr auto MAX_PATH_FILE = 260;
@@ -286,14 +323,14 @@ static std::vector<RE::TESRace*> vanilla_races{};
 static std::vector<RaceInfo> race_infos{};
 static std::vector<ArmorAddonInfo> armor_addon_infos{};
 
-static auto get_is_race_address_call_01 = REL::RelocationID(21691, 22173).address() + REL::Relocate(0x68, 0x68);
-static auto set_race_papyrus_address_call_01 = REL::RelocationID(53934, 54758).address() + REL::Relocate(0x23, 0x23);
-static auto get_is_race_address_call_02 = REL::RelocationID(21691, 22179).address() + REL::Relocate(0x66, 0x66);
-static auto get_is_race_address_jmp_01 = REL::ID(21034).address() + 0x7;
-static REL::Relocation<uintptr_t> get_is_race_address_table{REL::RelocationID(668606, 361561)};
-static REL::Relocation<uintptr_t> get_pc_is_race_address_table{REL::RelocationID(668982, 361937)};
-static REL::Relocation<uintptr_t> get_race_base_papyrus_address{REL::RelocationID(55449, 56004)};
-static REL::Relocation<uintptr_t> get_race_papyrus_address{REL::RelocationID(54134, 54930)};
+static auto get_is_race_address_call_01 = REL::RelocationID(21691, 22173).address() + REL::Relocate(0x68, 0x68); // 640 \ 1170 comp
+static auto set_race_papyrus_address_call_01 = REL::RelocationID(53934, 54758).address() + REL::Relocate(0x23, 0x23); // 640 \ 1170 comp
+static auto get_is_race_address_call_02 = REL::RelocationID(21691, 22179).address() + REL::Relocate(0x66, 0x66); // 640 \ 1170 comp
+static auto get_is_race_address_jmp_01 = REL::ID(21034).address() + 0x7; // 1597 only
+static REL::Relocation<uintptr_t> get_is_race_address_table{REL::RelocationID(668606, 361561)}; // 640 \ 1170 comp
+static REL::Relocation<uintptr_t> get_pc_is_race_address_table{REL::RelocationID(668982, 361937)}; // 640 \ 1170 comp
+static REL::Relocation<uintptr_t> get_race_base_papyrus_address{REL::RelocationID(55449, 56004)}; // 640 \ 1170 comp
+static REL::Relocation<uintptr_t> get_race_papyrus_address{REL::RelocationID(54134, 54930)}; // 640 \ 1170 comp
 
 static bool get_is_race_call_01(RE::Actor* actor, RE::TESRace* race, void* a3, double* ans);
 static bool get_is_race_call_02(RE::Actor* actor, RE::TESRace* race, void* a3, double* ans);
@@ -767,8 +804,7 @@ static void load_data()
       const auto mod_race_mod_name =
           tbl[RaceInfo::SECTION_NAME][RaceInfo::MOD_RACE_MOD_NAME_KEY].value_or("Skyrim.esm"s);
       const auto patch_base_race_stats = tbl[RaceInfo::SECTION_NAME][RaceInfo::PATCH_BASE_RACE_STATS].value_or(false);
-      const auto patch_alt_race_stats =
-          tbl[RaceInfo::SECTION_NAME][RaceInfo::PATCH_ALT_RACES_STATS].value_or(false);
+      const auto patch_alt_race_stats = tbl[RaceInfo::SECTION_NAME][RaceInfo::PATCH_ALT_RACES_STATS].value_or(false);
 
       logger::info("Read proxy race from data Id {} Mod {}", proxy_race_form_id, proxy_race_mod_name);
       RE::TESRace* proxy_race = tes_data_handler->LookupForm<RE::TESRace>(proxy_race_form_id, proxy_race_mod_name);
@@ -791,13 +827,13 @@ static void load_data()
       const auto get_form_id_vector = [&tbl](const std::string_view key) -> std::vector<RE::FormID> {
         auto alt_races_ids = std::vector<RE::FormID>{};
         if (const toml::array* alt_races_id_array = tbl[RaceInfo::SECTION_NAME][key].as_array()) {
-          logger::info("Size of toml array {}: {}",key, alt_races_id_array->size());
+          logger::info("Size of toml array {}: {}", key, alt_races_id_array->size());
           if (!alt_races_id_array->empty()) {
-            logger::info("Toml array {} not empty",key);
+            logger::info("Toml array {} not empty", key);
 
             alt_races_id_array->for_each([&alt_races_ids, key](auto&& form_id) {
               if constexpr (toml::is_number<decltype(form_id)>) {
-                logger::info("Toml raed array value {}: {}",key, *form_id);
+                logger::info("Toml raed array value {}: {}", key, *form_id);
                 alt_races_ids.push_back(static_cast<RE::FormID>(*form_id));
               }
             });
@@ -805,17 +841,17 @@ static void load_data()
         }
         return alt_races_ids;
       };
-      
+
       const auto get_mod_name_vector = [&tbl](const std::string_view key) -> std::vector<std::string> {
         auto alt_races_mods = std::vector<std::string>{};
         if (const toml::array* alt_races_mods_array = tbl[RaceInfo::SECTION_NAME][key].as_array()) {
-          logger::info("Size of toml array {}: {}",key, alt_races_mods_array->size());
+          logger::info("Size of toml array {}: {}", key, alt_races_mods_array->size());
           if (!alt_races_mods_array->empty()) {
-            logger::info("Toml array {} not empty",key);
+            logger::info("Toml array {} not empty", key);
 
             alt_races_mods_array->for_each([&alt_races_mods, key](auto&& mod_name) {
               if constexpr (toml::is_string<decltype(mod_name)>) {
-                logger::info("Toml raed array value {}: {}",key, *mod_name);
+                logger::info("Toml raed array value {}: {}", key, *mod_name);
                 alt_races_mods.push_back(static_cast<std::string>(*mod_name));
               }
             });
@@ -824,7 +860,9 @@ static void load_data()
         return alt_races_mods;
       };
 
-      const auto get_races_vector = [](RE::TESDataHandler* data, const std::vector<RE::FormID>& form_ids, const std::vector<std::string>& mod_names) -> std::vector<RE::TESRace*> {
+      const auto get_races_vector = [](RE::TESDataHandler* data,
+                                       const std::vector<RE::FormID>& form_ids,
+                                       const std::vector<std::string>& mod_names) -> std::vector<RE::TESRace*> {
         auto races = std::vector<RE::TESRace*>{};
         if (form_ids.empty() || mod_names.empty() || (form_ids.size() != mod_names.size())) {
           logger::info("mod_names and form_ids array mismatch");
@@ -834,7 +872,10 @@ static void load_data()
           logger::info("Read alt race from data Id {} Mod {}", form_ids.at(index), mod_names.at(index));
           auto race = data->LookupForm<RE::TESRace>(form_ids.at(index), mod_names.at(index));
           if (race) {
+            logger::info("Success read Alt Race: {}", race->GetFormEditorID());
             races.push_back(race);
+          } else {
+            logger::info("Fail read alt race from data Id {} Mod {}", form_ids.at(index), mod_names.at(index));
           }
         }
         return races;
@@ -847,20 +888,24 @@ static void load_data()
       auto mod_alt_races_id = get_form_id_vector(RaceInfo::MOD_ALT_RACES_FORM_ID_KEY);
       auto mod_alt_races_mod_name = get_mod_name_vector(RaceInfo::MOD_ALT_RACES_MOD_NAME_KEY);
       auto mod_alt_races = get_races_vector(tes_data_handler, mod_alt_races_id, mod_alt_races_mod_name);
-      
+
       std::vector<RE::TESRace*> stat_alt_races{};
 
       if (patch_alt_race_stats) {
         auto stat_alt_races_id = get_form_id_vector(RaceInfo::STAT_ALT_RACES_FORM_ID_KEY);
         auto stat_alt_races_mod_name = get_mod_name_vector(RaceInfo::STAT_ALT_RACES_MOD_NAME_KEY);
-        stat_alt_races = get_races_vector(tes_data_handler, stat_alt_races_id, stat_alt_races_mod_name);
+        auto races = get_races_vector(tes_data_handler, stat_alt_races_id, stat_alt_races_mod_name);
+        std::ranges::copy(races.begin(), races.end(), std::back_inserter(stat_alt_races));
       } else {
         std::ranges::copy(proxy_alt_races.begin(), proxy_alt_races.end(), std::back_inserter(stat_alt_races));
       }
 
-      const auto is_vectors_size_equals = proxy_alt_races.size() == mod_alt_races.size() == stat_alt_races.size();
+      const bool is_vectors_size_equals = (proxy_alt_races.size() == mod_alt_races.size()) && (mod_alt_races.size() == stat_alt_races.size());
       if (!is_vectors_size_equals) {
-        logger::info("Vectors of races is not equals");
+        logger::info("Vectors of races is not equals: P {} M {} S {}",
+                     proxy_alt_races.size(),
+                     mod_alt_races.size(),
+                     stat_alt_races.size());
       }
 
       if (proxy_race && mod_race && stat_base_race && is_vectors_size_equals) {
