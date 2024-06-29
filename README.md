@@ -1,17 +1,17 @@
 ## Universal solution for Custom Races with SKSE Plugin!
 ### Support 1.5.97 \ 1.6.640 \ 1.6.1170 Steam only I think (not tested with GOG and other releases)
 
-The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Confugurations for UBE is included.  
+The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Configurations for UBE is included.  
 
 It is recommended to disable **RaceCompatibility** from nexus and all patches for it, however if you have plugins that require it, I am attaching a light version that does not edit vanilla records. I'm also attaching the latest version of esp **UBE** from nexus which also does not edit vanilla records. And patch for **Unofficial Wet Redux UBE Patch** (yes, patch for patch!).
 
-[Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)  
+[Google Drive with releases and other files](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)  
 
 #### Fast Install Guide for UBE Users:
 If you're playing a vampire or werewolf, you'll probably need a new game.
 1. Disable **RaceCompatibility** from nexus and all patches for it.
-2. Download and install  **RaceCompatibilityCondition** from google disk.
-3. Download and install **RaceCompatibilityLight** from google disk.
+2. Download and install  **RaceCompatibilityCondition** from Google disk.
+3. Download and install **RaceCompatibilityLight** from Google disk.
 4. Download and install **UBE_AllRace** from google disk, overwrite original UBE esp.
 5. If you have installed **UnofficialWetReduxUBEPatch**, download and install **UnofficialWetReduxUBEPatch_RaceCompatibilityCondition** with overwrite original scripts.
 
