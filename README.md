@@ -8,7 +8,7 @@ It is recommended to disable **RaceCompatibility** from nexus and all patches fo
 [Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)
 
 ### Requirements:
-
+[Address Library](https://www.nexusmods.com/skyrimspecialedition/mods/32444)
 
 ### How it works.
 
