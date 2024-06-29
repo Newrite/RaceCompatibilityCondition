@@ -44,12 +44,17 @@ static void message_handler(SKSE::MessagingInterface::Message* message)
       if (settings.disable_vanilla_races) {
         RaceCompatibilityCondition::runtime_disable_vanilla_race();
       }
-      if (settings.runtime_patch_armor_addons) {
-        RaceCompatibilityCondition::runtime_patch_armor(settings);
-      }
       if (settings.get_set_race_hook) {
         RaceCompatibilityCondition::install_hooks();
         RaceCompatibilityCondition::OnPlayerUpdate::install_hook();
+      }
+      break;
+    }
+    case SKSE::MessagingInterface::kNewGame:
+    case SKSE::MessagingInterface::kPostLoadGame: {
+      auto& settings = RaceCompatibilityCondition::Settings::get_singleton();
+      if (settings.runtime_patch_armor_addons) {
+        RaceCompatibilityCondition::runtime_patch_armor(settings);
       }
       break;
     }
@@ -70,8 +75,7 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
   }
 
   const auto papyrus_vm = SKSE::GetPapyrusInterface();
-  if (!papyrus_vm || !papyrus_vm->Register(RaceCompatibilityCondition::PapyrusExtension::register_functions))
-  {
+  if (!papyrus_vm || !papyrus_vm->Register(RaceCompatibilityCondition::PapyrusExtension::register_functions)) {
     logger::info("papyrus_vm is null or can't register papyrus functions"sv);
     return false;
   }

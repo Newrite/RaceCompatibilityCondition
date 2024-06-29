@@ -13,9 +13,7 @@ constexpr auto SCRIPT_NAMESPACE = "RaceCompatibilityCondition"sv;
 
 // Papyrus Function
 constexpr auto FN_GET_RACE_ACTOR_BASE = "GetRaceActorBase"sv;
-auto GetRaceActorBase(
-    RE::StaticFunctionTag*,
-    const RE::TESNPC* actor) -> RE::TESRace*
+static auto GetRaceActorBase(RE::StaticFunctionTag*, const RE::TESNPC* actor) -> RE::TESRace*
 {
   if (actor) {
     return actor->race;
@@ -25,9 +23,7 @@ auto GetRaceActorBase(
 
 // Papyrus Function
 constexpr auto FN_GET_RACE_ACTOR = "GetRaceActor"sv;
-auto GetRaceActor(
-    RE::StaticFunctionTag*,
-    const RE::Actor* actor) -> RE::TESRace*
+static auto GetRaceActor(RE::StaticFunctionTag*, const RE::Actor* actor) -> RE::TESRace*
 {
   if (actor) {
     return actor->GetActorRuntimeData().race;
@@ -270,8 +266,17 @@ struct Settings final
   }
 };
 
+enum class HeadType
+{
+  kHuman = 0,
+  kElf = 1,
+  kKhajiit = 2,
+  kArgonian = 3
+};
+
 struct RaceInfo final
 {
+  HeadType head_type;
   RE::TESRace* proxy_race;
   std::vector<RE::TESRace*> proxy_alt_races;
   RE::TESRace* mod_race;
@@ -281,6 +286,7 @@ struct RaceInfo final
   bool patch_base_race_stat;
   bool patch_alt_races_stat;
   static constexpr std::string_view SECTION_NAME = "RaceInfo"sv;
+  static constexpr std::string_view HEAD_TYPE_KEY = "HeadType"sv;
   static constexpr std::string_view PROXY_RACE_FORM_ID_KEY = "ProxyRaceFormId"sv;
   static constexpr std::string_view STAT_RACE_FORM_ID_KEY = "StatRaceFormId"sv;
   static constexpr std::string_view PROXY_ALT_RACES_FORM_ID_KEY = "ProxyAltRacesFormId"sv;
@@ -305,14 +311,6 @@ struct ArmorAddonInfo final
   std::uint16_t write_count;
 };
 
-/*
- * Входит в сет рейс - Подменять расу только тогда, если запомнена модовая раса (определить путем перебора всех мод
- * рас), а выставляется раса которая ее прокси { return RaceInfo.mod_race; } Входит в гет рейс - Подменять расу только
- * тогда, если запомнена модовая раса (определить путем перебора всех мод рас), и актор имеет эту модовую расу { return
- * RaceInfo.proxy_race; } входит в гет ис рейс - Подменять расу только тогда, если в аргументе укахана модовая раса
- * (определить путем перебора для мод рас) { return RaceInfo.proxy_race; }
- */
-
 static std::string path_to_mod_race_tomls = "Data/SKSE/Plugins/RaceCompatibilityCondition/ModRace";
 static std::string path_to_vanilla_race_tomls = "Data/SKSE/Plugins/RaceCompatibilityCondition/VanillaRace";
 
@@ -323,14 +321,17 @@ static std::vector<RE::TESRace*> vanilla_races{};
 static std::vector<RaceInfo> race_infos{};
 static std::vector<ArmorAddonInfo> armor_addon_infos{};
 
-static auto get_is_race_address_call_01 = REL::RelocationID(21691, 22173).address() + REL::Relocate(0x68, 0x68); // 640 \ 1170 comp
-static auto set_race_papyrus_address_call_01 = REL::RelocationID(53934, 54758).address() + REL::Relocate(0x23, 0x23); // 640 \ 1170 comp
-static auto get_is_race_address_call_02 = REL::RelocationID(21691, 22179).address() + REL::Relocate(0x66, 0x66); // 640 \ 1170 comp
-static auto get_is_race_address_jmp_01 = REL::ID(21034).address() + 0x7; // 1597 only
-static REL::Relocation<uintptr_t> get_is_race_address_table{REL::RelocationID(668606, 361561)}; // 640 \ 1170 comp
+static auto get_is_race_address_call_01 =
+    REL::RelocationID(21691, 22173).address() + REL::Relocate(0x68, 0x68); // 640 \ 1170 comp
+static auto set_race_papyrus_address_call_01 =
+    REL::RelocationID(53934, 54758).address() + REL::Relocate(0x23, 0x23); // 640 \ 1170 comp
+static auto get_is_race_address_call_02 =
+    REL::RelocationID(21691, 22179).address() + REL::Relocate(0x66, 0x66);                         // 640 \ 1170 comp
+static auto get_is_race_address_jmp_01 = REL::ID(21034).address() + 0x7;                           // 1597 only
+static REL::Relocation<uintptr_t> get_is_race_address_table{REL::RelocationID(668606, 361561)};    // 640 \ 1170 comp
 static REL::Relocation<uintptr_t> get_pc_is_race_address_table{REL::RelocationID(668982, 361937)}; // 640 \ 1170 comp
-static REL::Relocation<uintptr_t> get_race_base_papyrus_address{REL::RelocationID(55449, 56004)}; // 640 \ 1170 comp
-static REL::Relocation<uintptr_t> get_race_papyrus_address{REL::RelocationID(54134, 54930)}; // 640 \ 1170 comp
+static REL::Relocation<uintptr_t> get_race_base_papyrus_address{REL::RelocationID(55449, 56004)};  // 640 \ 1170 comp
+static REL::Relocation<uintptr_t> get_race_papyrus_address{REL::RelocationID(54134, 54930)};       // 640 \ 1170 comp
 
 static bool get_is_race_call_01(RE::Actor* actor, RE::TESRace* race, void* a3, double* ans);
 static bool get_is_race_call_02(RE::Actor* actor, RE::TESRace* race, void* a3, double* ans);
@@ -689,7 +690,7 @@ static void runtime_patch_armor(const Settings& settings)
 
   armor_addon_infos.clear();
 
-  const auto nord_race = data_handler->LookupForm<RE::TESRace>(0x13746, "Skyrim.esm");
+  const RE::TESRace* armor_addon_check_race = data_handler->LookupForm<RE::TESRace>(0x13746, "Skyrim.esm");
 
   for (auto [key, form] : *forms_map) {
 
@@ -702,14 +703,34 @@ static void runtime_patch_armor(const Settings& settings)
       continue;
     }
 
-    if (armor->templateArmor) {
-      continue;
-    }
+    // if (armor->templateArmor) {
+    //   continue;
+    // }
 
     if (check_slots(armor, settings)) {
 
       auto armor_addons = armor->armorAddons;
       for (const auto& race_info : race_infos) {
+
+        switch (race_info.head_type) {
+
+          case HeadType::kHuman: {
+            armor_addon_check_race = data_handler->LookupForm<RE::TESRace>(0x13746, "Skyrim.esm");
+            break;
+          }
+          case HeadType::kElf: {
+            armor_addon_check_race = data_handler->LookupForm<RE::TESRace>(0x13742, "Skyrim.esm");
+            break;
+          }
+          case HeadType::kKhajiit: {
+            armor_addon_check_race = data_handler->LookupForm<RE::TESRace>(0x13745, "Skyrim.esm");
+            break;
+          }
+          case HeadType::kArgonian: {
+            armor_addon_check_race = data_handler->LookupForm<RE::TESRace>(0x13740, "Skyrim.esm");
+            break;
+          }
+        }
 
         RE::TESObjectARMA* armor_addon_to_add = nullptr;
         bool can_add = true;
@@ -725,7 +746,7 @@ static void runtime_patch_armor(const Settings& settings)
               continue;
             }
 
-            if (armor_race == nord_race) {
+            if (armor_race == armor_addon_check_race) {
               armor_addon_to_add = armor_addon;
             }
 
@@ -791,12 +812,15 @@ static void load_data()
 
     namespace fs = std::filesystem;
 
-    const auto parse_toml_to_race_info = [](const std::string& path_to_toml,
+    const auto parse_toml_to_race_info = [](const std::filesystem::path& path_to_toml,
                                             RE::TESDataHandler* tes_data_handler) -> std::optional<RaceInfo> {
-      logger::info("Read toml: {}", path_to_toml);
+      // logger::info("Read toml: {}", path_to_toml);
+      logger::info("Read toml");
 
-      auto tbl = toml::parse_file(path_to_toml);
+      auto tbl = toml::parse_file(path_to_toml.wstring());
 
+      const auto head_type = tbl[RaceInfo::SECTION_NAME][RaceInfo::HEAD_TYPE_KEY].value_or(HeadType::kHuman);
+      logger::info("RaceInfo HeadType: {}"sv, static_cast<int>(head_type));
       const auto proxy_race_form_id = tbl[RaceInfo::SECTION_NAME][RaceInfo::PROXY_RACE_FORM_ID_KEY].value_or(0x799);
       const auto proxy_race_mod_name =
           tbl[RaceInfo::SECTION_NAME][RaceInfo::PROXY_RACE_MOD_NAME_KEY].value_or("Skyrim.esm"s);
@@ -900,7 +924,8 @@ static void load_data()
         std::ranges::copy(proxy_alt_races.begin(), proxy_alt_races.end(), std::back_inserter(stat_alt_races));
       }
 
-      const bool is_vectors_size_equals = (proxy_alt_races.size() == mod_alt_races.size()) && (mod_alt_races.size() == stat_alt_races.size());
+      const bool is_vectors_size_equals =
+          (proxy_alt_races.size() == mod_alt_races.size()) && (mod_alt_races.size() == stat_alt_races.size());
       if (!is_vectors_size_equals) {
         logger::info("Vectors of races is not equals: P {} M {} S {}",
                      proxy_alt_races.size(),
@@ -909,7 +934,8 @@ static void load_data()
       }
 
       if (proxy_race && mod_race && stat_base_race && is_vectors_size_equals) {
-        return RaceInfo{proxy_race,
+        return RaceInfo{head_type,
+                        proxy_race,
                         proxy_alt_races,
                         mod_race,
                         mod_alt_races,
@@ -924,13 +950,14 @@ static void load_data()
     };
 
     for (const auto& toml_entry : fs::directory_iterator(path_to_vanilla_race_tomls)) {
-      const auto toml_path = toml_entry.path().string();
+      const auto toml_path = toml_entry.path().u16string();
 
-      if (toml_path.ends_with(".toml")) {
+      if (toml_path.ends_with(u".toml")) {
 
-        logger::info("Read toml: {}", toml_path);
+        //logger::info("Read toml: {}", toml_path);
+        logger::info("Read toml");
 
-        auto tbl = toml::parse_file(toml_path);
+        auto tbl = toml::parse_file(toml_entry.path().wstring());
         const auto vanilla_race_form_id =
             tbl[RaceInfo::SECTION_NAME][RaceInfo::VANILLA_RACE_FORM_ID_KEY].value_or(0x799);
         const auto vanilla_race_mod_name =
