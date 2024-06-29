@@ -3,9 +3,12 @@
 
 The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Confugurations for UBE is included.  
 
-It is recommended to disable **RaceCompatibility** from nexus and all patches for it since, however if you have plugins that require it, I am attaching a light version that does not edit vanilla entries. I'm also attaching the latest version of esp **UBE** from nexus which also does not edit vanilla entries.
+It is recommended to disable **RaceCompatibility** from nexus and all patches for it, however if you have plugins that require it, I am attaching a light version that does not edit vanilla records. I'm also attaching the latest version of esp **UBE** from nexus which also does not edit vanilla records. And patch for **Unofficial Wet Redux UBE Patch** (yes, patch for patch!).
 
 [Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)
+
+### Requirements:
+
 
 ### How it works.
 
@@ -107,7 +110,7 @@ Basically everything is clear here by the name and comments, let's focus on the 
 
 **RuntimePatchRacesStat** - Transfers from main race such characteristics as skill values, health - magic - stamina, spells \ abilities, keywords (but it adds those keywords which are not present on the race from the mod, does not replace keywords which are already present on the race) and attack data of the race.  
 
-**RuntimePatchArmorAddons** - automatically adds mod races for which there is a config, in armor addons in which this race is not, provided that the armor in which is this armor addon, there is no armor addon with this race. That is, the plugin searches just the armor, not the armor addons themselves. Fully compatible with **ArmoryDataManipulator**  as it is executed after it. Also, you can change the slots in the array, and in the game open the main menu (that on ESC), will update armor addons, and they will be patched already based on the new values.  
+**RuntimePatchArmorAddons** - automatically adds races from the config to those armor addons that do not have them. Fully compatible with **ArmoryDataManipulator** because it is executed after it. You can also change the slots in the array, and in the game to open close the main menu (that on ESC), will update armor addons, and they will be patched already based on the new values.  
 
 
 Now let's look at the **UBE_Breton** race config.
@@ -130,7 +133,7 @@ StatAltRacesFormId = [ 0x8883C ]
 StatAltRacesModName = [ "Skyrim.esm" ]
 ```
 
-**HeadType** - Can take values 0 (human), 1 (elf), 2 (kajiit) 3 (argonian). It is necessary for more correct work of **RuntimePatchArmorAddons**, on the basis of this race is chosen in which armor addon to add a custom race (for example, if you specify 0, will be added to the armor addon, which has a race of nords)  
+**HeadType** - Can take values 0 (**Human**), 1 (**Elf**), 2 (**Khajit**), 3 (**Argonian**). This is necessary for more correct work of **RuntimePatchArmorAddons** , select value based on the modded race's head type.  
 
 **ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will be substituted for the custom race, as well as the name of the mod in which to look for this FormID.  
 
