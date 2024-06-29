@@ -1,7 +1,8 @@
 ## Universal solution for Custom Races with SKSE Plugin!
 ### Support 1.5.97 \ 1.6.640 \ 1.6.1170 Steam only I think (not tested with GOG and other releases)
 
-The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Confugurations for UBE is included.
+The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Confugurations for UBE is included.  
+
 It is recommended to disable **RaceCompatibility** from nexus and all patches for it since, however if you have plugins that require it, I am attaching a light version that does not edit vanilla entries. I'm also attaching the latest version of esp **UBE** from nexus which also does not edit vanilla entries.
 
 [Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)
@@ -102,9 +103,12 @@ RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot
 SlotsArrayAsWhiteList = true # if false, armor addon with one of a slot from SlotsArray not allowed to patch
 SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes for add \ not add
 ```
-Basically everything is clear here by the name and comments, let's focus on the functionality of **RuntimePatchArmorAddons** and **RuntimePatchRacesStat**.
-**RuntimePatchRacesStat** - Transfers from main race such characteristics as skill values, health - magic - stamina, spells \ abilities, keywords (but it adds those keywords which are not present on the race from the mod, does not replace keywords which are already present on the race) and attack data of the race.
-**RuntimePatchArmorAddons** - automatically adds mod races for which there is a config, in armor addons in which this race is not, provided that the armor in which is this armor addon, there is no armor addon with this race. That is, the plugin searches just the armor, not the armor addons themselves. Fully compatible with **ArmoryDataManipulator**  as it is executed after it. Also, you can change the slots in the array, and in the game open the main menu (that on ESC), will update armor addons, and they will be patched already based on the new values.
+Basically everything is clear here by the name and comments, let's focus on the functionality of **RuntimePatchArmorAddons** and **RuntimePatchRacesStat**.  
+
+**RuntimePatchRacesStat** - Transfers from main race such characteristics as skill values, health - magic - stamina, spells \ abilities, keywords (but it adds those keywords which are not present on the race from the mod, does not replace keywords which are already present on the race) and attack data of the race.  
+
+**RuntimePatchArmorAddons** - automatically adds mod races for which there is a config, in armor addons in which this race is not, provided that the armor in which is this armor addon, there is no armor addon with this race. That is, the plugin searches just the armor, not the armor addons themselves. Fully compatible with **ArmoryDataManipulator**  as it is executed after it. Also, you can change the slots in the array, and in the game open the main menu (that on ESC), will update armor addons, and they will be patched already based on the new values.  
+
 
 Now let's look at the **UBE_Breton** race config.
 ```toml
@@ -126,14 +130,22 @@ StatAltRacesFormId = [ 0x8883C ]
 StatAltRacesModName = [ "Skyrim.esm" ]
 ```
 
-**HeadType** - Can take values 0 (human), 1 (elf), 2 (kajiit) 3 (argonian). It is necessary for more correct work of **RuntimePatchArmorAddons**, on the basis of this race is chosen in which armor addon to add a custom race (for example, if you specify 0, will be added to the armor addon, which has a race of nords)
-**ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will be substituted for the custom race, as well as the name of the mod in which to look for this FormID.
-**ProxyAltRacesFormId** and **ProxyAltRacesModName** - Same thing, but this specifies the vampire analog of the race, or other similar races that work on the same principle (for example, in one lich mod each race has its own lich race).
-**ModRaceFormId** and **ModRaceModName** - This is simple, the FormID of the custom race and the name of the mod it is in.
-**ModAltRacesFormId** and **ModAltRacesModName** - Same thing, but for the vampire analogs of the custom race and so on.
-**PatchBaseRaceStats** and **PatchAltRacesStats** - Works if **RuntimePatchRacesStat** is enabled in the main config. Enables or disables this patching of stats for the base custom race and for the "vampire" custom race.
-**StatRaceFormId** and **StatRaceModName** - This is the actual race from which to take stats for the custom race when patching.
-**StatAltRacesFormId** and **StatAltRacesModName** - The same, but for the vampire race already.
+**HeadType** - Can take values 0 (human), 1 (elf), 2 (kajiit) 3 (argonian). It is necessary for more correct work of **RuntimePatchArmorAddons**, on the basis of this race is chosen in which armor addon to add a custom race (for example, if you specify 0, will be added to the armor addon, which has a race of nords)  
+
+**ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will be substituted for the custom race, as well as the name of the mod in which to look for this FormID.  
+
+**ProxyAltRacesFormId** and **ProxyAltRacesModName** - Same thing, but this specifies the vampire analog of the race, or other similar races that work on the same principle (for example, in one lich mod each race has its own lich race).  
+
+**ModRaceFormId** and **ModRaceModName** - This is simple, the FormID of the custom race and the name of the mod it is in.  
+
+**ModAltRacesFormId** and **ModAltRacesModName** - Same thing, but for the vampire analogs of the custom race and so on.  
+
+**PatchBaseRaceStats** and **PatchAltRacesStats** - Works if **RuntimePatchRacesStat** is enabled in the main config. Enables or disables this patching of stats for the base custom race and for the "vampire" custom race.  
+
+**StatRaceFormId** and **StatRaceModName** - This is the actual race from which to take stats for the custom race when patching.  
+
+**StatAltRacesFormId** and **StatAltRacesModName** - The same, but for the vampire race already.  
+
 
 Configurations of custom races are located in **SKSE\Plugins\RaceCompatibilityCondition\ModRace**, the name does not matter, the main thing is **.toml**.
 
