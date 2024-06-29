@@ -150,7 +150,7 @@ StatAltRacesModName = [ "Skyrim.esm" ]
 **StatAltRacesFormId** and **StatAltRacesModName** - The same, but for the vampire race already.  
 
 
-Configurations of custom races are located in **SKSE\Plugins\RaceCompatibilityCondition\ModRace**, the name does not matter, the main thing is **.toml**.
+Configurations of custom races are located in **SKSE\Plugins\RaceCompatibilityCondition\ModRace**, the name does not matter, the main thing is **.toml** extension.
 
 ### Papyrus extension
 
