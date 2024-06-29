@@ -5,7 +5,15 @@ The mod allows you to avoid patching scripts and esp to add compatibility to any
 
 It is recommended to disable **RaceCompatibility** from nexus and all patches for it, however if you have plugins that require it, I am attaching a light version that does not edit vanilla records. I'm also attaching the latest version of esp **UBE** from nexus which also does not edit vanilla records. And patch for **Unofficial Wet Redux UBE Patch** (yes, patch for patch!).
 
-[Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)
+[Google Drive with releases and other files.](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)  
+
+#### Fast Install Guide for UBE Users:
+If you're playing a vampire or werewolf, you'll probably need a new game.
+1. Disable **RaceCompatibility** from nexus and all patches for it.
+2. Download and install  **RaceCompatibilityCondition** from google disk.
+3. Download and install **RaceCompatibilityLight** from google disk.
+4. Download and install **UBE_AllRace** from google disk, overwrite original UBE esp.
+5. If you have installed **UnofficialWetReduxUBEPatch**, download and install **UnofficialWetReduxUBEPatch_RaceCompatibilityCondition** with overwrite original scripts.
 
 ### Requirements:
 [Address Library](https://www.nexusmods.com/skyrimspecialedition/mods/32444)
@@ -16,9 +24,9 @@ Here is the standard config of the plugin itself:
 ```toml
 [RaceCompatilbility]
 GetSetRaceHook = true # Patch papyrus SetRace \ GetRace functions and patch GetIsRace game condition
-RuntimePatchRacesStat = true # Set gameplay stats to mod race from stat race on game boot
+RuntimePatchRacesStat = true # Replace mod race's stats values with ones from StatRace on game boot
 DisableVanillaRaces = false # Uncheck playble flags from vanilla races on game boot
-RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not added
+RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not present
 SlotsArrayAsWhiteList = true # if false, armor addon with one of a slot from SlotsArray a not allowed to patch
 SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes for add \ not add
 
@@ -96,15 +104,15 @@ Patching these functions and condition is activated when **GetSetRaceHook** is e
 
 **GetRace** \ **SetRace** works only for a player. **GetIsRace** works for everyone.
 
-Let's break down the basic config
+### Let's break down the basic config
 ```toml
 [RaceCompatilbility]
 GetSetRaceHook = true # Patch papyrus SetRace\ GetRace functions and patch GetIsRace game condition
 RuntimePatchRacesStat = true # Set gameplay stats to mod race from stat race on game boot
 DisableVanillaRaces = false # Uncheck playble flags from vanilla races on game boot
 RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not added
-SlotsArrayAsWhiteList = true # if false, armor addon with one of a slot from SlotsArray not allowed to patch
-SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes for add \ not add
+SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one one slot from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
+SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exlude
 ```
 Basically everything is clear here by the name and comments, let's focus on the functionality of **RuntimePatchArmorAddons** and **RuntimePatchRacesStat**.  
 
@@ -113,7 +121,7 @@ Basically everything is clear here by the name and comments, let's focus on the 
 **RuntimePatchArmorAddons** - automatically adds races from the config to those armor addons that do not have them. Fully compatible with **ArmoryDataManipulator** because it is executed after it. You can also change the slots in the array, and in the game to open close the main menu (that on ESC), will update armor addons, and they will be patched already based on the new values.  
 
 
-Now let's look at the **UBE_Breton** race config.
+### Now let's look at the **UBE_Breton** race config.
 ```toml
 [RaceInfo]
 HeadType = 0
@@ -133,9 +141,9 @@ StatAltRacesFormId = [ 0x8883C ]
 StatAltRacesModName = [ "Skyrim.esm" ]
 ```
 
-**HeadType** - Can take values 0 (**Human**), 1 (**Mer**), 2 (**Khajit**), 3 (**Argonian**). This is necessary for more correct work of **RuntimePatchArmorAddons** , select value based on the modded race's head type.  
+**HeadType** - Can take values 0 (**Human**), 1 (**Mer\Elf**), 2 (**Khajit**), 3 (**Argonian**). This is necessary for more correct work of **RuntimePatchArmorAddons** , select value based on the modded race's head type.  
 
-**ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will be substituted for the custom race, as well as the name of the mod in which to look for this FormID.  
+**ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will substitute for the custom race, as well as the name of the mod in which to look for this FormID.  
 
 **ProxyAltRacesFormId** and **ProxyAltRacesModName** - Same thing, but this specifies the vampire analog of the race, or other similar races that work on the same principle (for example, in one lich mod each race has its own lich race).  
 
@@ -143,7 +151,7 @@ StatAltRacesModName = [ "Skyrim.esm" ]
 
 **ModAltRacesFormId** and **ModAltRacesModName** - Same thing, but for the vampire analogs of the custom race and so on.  
 
-**PatchBaseRaceStats** and **PatchAltRacesStats** - Works if **RuntimePatchRacesStat** is enabled in the main config. Enables or disables this patching of stats for the base custom race and for the "vampire" custom race.  
+**PatchBaseRaceStats** and **PatchAltRacesStats** - Works if **RuntimePatchRacesStat** is enabled in the main config. Enables or disables this patching of stats for the custom race and for the "vampire" custom race.  
 
 **StatRaceFormId** and **StatRaceModName** - This is the actual race from which to take stats for the custom race when patching.  
 
