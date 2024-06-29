@@ -133,7 +133,7 @@ StatAltRacesFormId = [ 0x8883C ]
 StatAltRacesModName = [ "Skyrim.esm" ]
 ```
 
-**HeadType** - Can take values 0 (**Human**), 1 (**Elf**), 2 (**Khajit**), 3 (**Argonian**). This is necessary for more correct work of **RuntimePatchArmorAddons** , select value based on the modded race's head type.  
+**HeadType** - Can take values 0 (**Human**), 1 (**Mer**), 2 (**Khajit**), 3 (**Argonian**). This is necessary for more correct work of **RuntimePatchArmorAddons** , select value based on the modded race's head type.  
 
 **ProxyRaceFormId** and **ProxyRaceModName** - FormID of the race that will be substituted for the custom race, as well as the name of the mod in which to look for this FormID.  
 
