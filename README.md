@@ -27,7 +27,7 @@ GetSetRaceHook = true # Patch papyrus SetRace\ GetRace functions and patch GetIs
 RuntimePatchRacesStat = true # Set gameplay stats to mod race from stat race on game boot
 DisableVanillaRaces = false # Uncheck playble flags from vanilla races on game boot
 RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not added
-SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one one slot from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
+SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one of slots from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
 SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exlude
 
 # default array 30, 31, 35, 36, 39, 40, 41, 42, 43, 47
