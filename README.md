@@ -1,7 +1,7 @@
 ## Universal solution for Custom Races with SKSE Plugin!
 ### Support 1.5.97 \ 1.6.640 \ 1.6.1170 Steam only I think (not tested with GOG and other releases)
 
-The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Configurations for UBE is included.  
+The mod allows you to avoid patching scripts and esp to add compatibility to any custom race just by writing the race config once (yes, you can use any vampire mod and everything will work automatically without patches). The mod also has some more additional features that I will write about next. Configurations for UBE and COR is included.  
 
 It is recommended to disable **RaceCompatibility** from nexus and all patches for it, however if you have plugins that require it, I am attaching a light version that does not edit vanilla records. I'm also attaching the latest version of esp **UBE** and **COR** from nexus which also does not edit vanilla records. And patch for **Unofficial Wet Redux UBE Patch** (yes, patch for patch!).
 
