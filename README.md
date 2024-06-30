@@ -28,7 +28,7 @@ RuntimePatchRacesStat = true # Set gameplay stats to mod race from stat race on 
 DisableVanillaRaces = false # Uncheck playble flags from vanilla races on game boot
 RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not added
 SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one of slots from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
-SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exlude
+SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exclude
 
 # default array 30, 31, 35, 36, 39, 40, 41, 42, 43, 47
 
@@ -100,7 +100,7 @@ GetIsRace
 GetPCIsRace
 ```
 
-Patching these functions and condition is activated when **GetSetRaceHook** is enabled, in this case if you are using a mod race that the config is added for, the plugin will substitute that race in the calls. For example when Papyrus requests **GetRace** for a player who plays as **UBE_Breton** , it will get **Breton** instead of **UBE_Breton** and works with it, based on this it may for example decide to assign BretonVampire race to the player, then **SetRace(BretonVampire)** will be called, but the player will get the race specified in the config, and it will be **UBE_BretonVampire** . With the game condition **GetIsRace** the same thing will happen, the game will get **Breton** instead of **UBE_Breton** and will check by this race (this, for example, automatically activates all racial dialogs and so on and so forth).
+Patching these functions and condition is activated when **GetSetRaceHook** is enabled, in this case if you are using a mod race that the config is added for, the plugin will substitute that race in the calls. For example when Papyrus requests **GetRace** for a player who plays as **UBE_Breton** , it will get **Breton** instead of **UBE_Breton** and works with it, based on this it may for example decide to assign **BretonVampire** race to the player, then **SetRace(BretonVampire)** will be called, but the player will get the race specified in the config, and it will be **UBE_BretonVampire** . With the game condition **GetIsRace** the same thing will happen, the game will get **Breton** instead of **UBE_Breton** and will check by this race (this, for example, automatically activates all racial dialogs and so on and so forth).
 
 **GetRace** \ **SetRace** works only for a player. **GetIsRace** works for everyone.
 
@@ -111,8 +111,8 @@ GetSetRaceHook = true # Patch papyrus SetRace\ GetRace functions and patch GetIs
 RuntimePatchRacesStat = true # Set gameplay stats to mod race from stat race on game boot
 DisableVanillaRaces = false # Uncheck playble flags from vanilla races on game boot
 RuntimePatchArmorAddons = true # Add mod race to armor addons with specific slot if not added
-SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one one slot from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
-SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exlude
+SlotsArrayAsWhiteList = true # If set to true, patches armor addons for which at least one of slots from SlotsArray is present, otherwise patches armor addons for which none of the slots from SlotsArray are present
+SlotsArray = [ 30, 31, 35, 36, 39, 40, 41, 42, 43, 47 ] # slot indexes to add \ exclude
 ```
 Basically everything is clear here by the name and comments, let's focus on the functionality of **RuntimePatchArmorAddons** and **RuntimePatchRacesStat**.  
 
