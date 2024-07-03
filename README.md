@@ -7,6 +7,21 @@ It is recommended to disable **RaceCompatibility** from nexus and all patches fo
 
 [Google Drive with releases and other files](https://drive.google.com/drive/folders/1lwWp4bOrbEFSkp78Kwjq4BIy_9Hy1Cda)  
 
+#### Features:
+- Automatically patches **armor addons** that do not need to be converted for **custom body** (shields, amulets, rings, etc.)  
+- Automatically patches **race stats** for the **race overhaul** that you have (according to what is described in the config)  
+- Automatically patches all **game conditions** by race (according to what is described in the config)  
+- Automatically patches the **scripts** that work with race (according to what is described in the config), you **no longer need patches** for mods for vampirism!  
+
+#### The mod is not a silver bullet:  
+- It will not affect **SKSE plugins** in any way, as they do not access character races **via papyrus functions** and do not compare them **via a game condition**  
+- If you don't want your race to be counted as one of the vanilla races for the game, **you still have to use the patch**  
+
+#### TODO:  
+- Add a couple of new parameters to the config (disabling/enabling **Get** / **Set race** and **GetIsRace** for each race in the config)  
+- Shorten the config a bit by **combining the FormID and ModName** parameters into one (e.g. **"Skyrim.esm~0x13741"**)  
+- Add **EditorID** support
+
 #### Fast Install Guide for UBE \ COR Users:
 If you're playing a vampire or werewolf, you'll probably need a new game.
 1. Disable **RaceCompatibility** from nexus and all patches for it.
