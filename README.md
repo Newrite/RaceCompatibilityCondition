@@ -20,7 +20,8 @@ It is recommended to disable **RaceCompatibility** from nexus and all patches fo
 #### TODO:  
 - Add a couple of new parameters to the config (disabling/enabling **Get** / **Set race** and **GetIsRace** for each race in the config)  
 - Shorten the config a bit by **combining the FormID and ModName** parameters into one (e.g. **"Skyrim.esm~0x13741"**)  
-- Add **EditorID** support
+- Add **EditorID** support  
+- A small code refactoring  
 
 #### Fast Install Guide for UBE \ COR Users:
 If you're playing a vampire or werewolf, you'll probably need a new game.
