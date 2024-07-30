@@ -442,7 +442,7 @@ static void set_race_papyrus_call_01(RE::Actor* actor, RE::TESRace* race, bool i
           }
           // swap race here
           auto race_for_swap =
-              (race_info.proxy_race == race) ? race_info.proxy_race : race_info.mod_alt_races.at(alt_race_index);
+              (race_info.proxy_race == race) ? race_info.mod_race : race_info.mod_alt_races.at(alt_race_index);
           logger::info("SetRace race_for_swap: {}", race_for_swap->GetFormEditorID());
           return set_race_papyrus_call_01_(actor, race_for_swap, is_player);
         }
