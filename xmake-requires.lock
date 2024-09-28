@@ -11,6 +11,14 @@
             },
             version = "3.29.2"
         },
+        ["rapidcsv#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "89ed2220243896caabb706ab55cde873e8f0e656",
+                url = "https://github.com/xmake-io/xmake-repo.git"
+            },
+            version = "8.82"
+        },
         ["spdlog#9c36f0a9"] = {
             repo = {
                 branch = "master",

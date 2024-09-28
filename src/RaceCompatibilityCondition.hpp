@@ -106,6 +106,8 @@ static void load(const SKSE::SerializationInterface& a_interface)
         }
 
         logger::info("Success read record with FormID: {} FileName: {}"sv, form_id, file_name);
+        race_form_id = form_id;
+        strcpy_s(race_file_name, file_name);
       }
       default: {
         logger::warn("Unrecognized signature type: {}"sv, type);
@@ -425,9 +427,9 @@ static void set_race_papyrus_call_01(RE::Actor* actor, RE::TESRace* race, bool i
 
     if (const auto memo_race = Serialization::get_race()) {
 
-      logger::info("set_race_papyrus_call_01 races actor {} race {}",
+      logger::info("set_race_papyrus_call_01 races actor {} race {} memo_race {}",
                    actor->GetActorRuntimeData().race->GetFormEditorID(),
-                   race->GetFormEditorID());
+                   race->GetFormEditorID(), memo_race->GetFormEditorID());
 
       for (const auto& race_info : race_infos) {
         if ((race_info.mod_race == memo_race || race_is_in_vector(memo_race, race_info.mod_alt_races)) &&
@@ -1100,7 +1102,7 @@ struct OnPlayerUpdate final
 
     static float timer_100_ms = 0.100f;
 
-    if (this_ && timer_100_ms <= 0.f) {
+    if (this_ && timer_100_ms <= 0.0f) {
 
       timer_100_ms = 0.100f;
       const auto race = this_->GetRace();
@@ -1112,6 +1114,7 @@ struct OnPlayerUpdate final
             return update_pc_(this_, delta);
           }
         }
+        
         for (const auto vanilla_race : vanilla_races) {
           if (vanilla_race == race) {
             Serialization::race_form_id = race->GetLocalFormID();

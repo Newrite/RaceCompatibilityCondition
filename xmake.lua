@@ -6,7 +6,7 @@ includes(os.getenv("CommonLibSSE-NG"))
 
 -- set project
 set_project("RaceCompatibilityCondition")
-set_version("1.0.1")
+set_version("1.0.2")
 set_license("GPL-3.0")
 
 -- set defaults
@@ -22,8 +22,8 @@ add_rules("plugin.vsxmake.autoupdate")
 set_policy("package.requires_lock", true)
 
 -- set configs
-set_config("skyrim_vr", false)
-set_config("skyrim_ae", true)
+set_config("skyrim_vr", true)
+set_config("skyrim_ae", false)
 set_config("skyrim_se", false)
 set_config("skse_xbyak", true)
 
