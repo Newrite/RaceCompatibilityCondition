@@ -1,16 +1,16 @@
 -- set minimum xmake version
-set_xmakever("2.8.2")
+set_xmakever("3.0.5")
 
 -- includes
 includes(os.getenv("CommonLibSSE-NG"))
 
 -- set project
 set_project("RaceCompatibilityCondition")
-set_version("1.0.2")
+set_version("1.0.3")
 set_license("GPL-3.0")
 
 -- set defaults
-set_languages("c++23")
+set_languages("c++latest")
 set_warnings("allextra")
 set_defaultmode("releasedbg")
 
@@ -23,8 +23,8 @@ set_policy("package.requires_lock", true)
 
 -- set configs
 set_config("skyrim_vr", true)
-set_config("skyrim_ae", false)
-set_config("skyrim_se", false)
+set_config("skyrim_ae", true)
+set_config("skyrim_se", true)
 set_config("skse_xbyak", true)
 
 -- targets
@@ -46,21 +46,3 @@ target("RaceCompatibilityCondition")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
 
-    -- copy build files to MODS or GAME paths (remove this if not needed)
-    after_build(function(target)
-        local copy = function(env, ext)
-            for _, env in pairs(env:split(";")) do
-                if os.exists(env) then
-                    local plugins = path.join(env, ext, "SKSE/Plugins")
-                    os.mkdir(plugins)
-                    os.trycp(target:targetfile(), plugins)
-                    os.trycp(target:symbolfile(), plugins)
-                end
-            end
-        end
-        if os.getenv("XSE_TES5_MODS_PATH") then
-            copy(os.getenv("XSE_TES5_MODS_PATH"), target:name())
-        elseif os.getenv("XSE_TES5_GAME_PATH") then
-            copy(os.getenv("XSE_TES5_GAME_PATH"), "Data")
-        end
-    end)

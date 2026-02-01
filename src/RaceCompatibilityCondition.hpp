@@ -558,9 +558,12 @@ static bool get_is_race_call_01(RE::Actor* actor, RE::TESRace* race, void* a3, d
 
 static bool get_is_race_call_02(RE::Actor* actor, RE::TESRace* race, void* a3, double* ans)
 {
-  if (race && actor && actor->GetActorRuntimeData().race) {
+  
+  auto& runtime_data = actor->GetActorRuntimeData();
+  
+  if (race && actor && runtime_data.race) {
 
-    const auto actor_race = actor->GetActorRuntimeData().race;
+    const auto actor_race = runtime_data.race;
     // logger::info("Check races actor {} race {}", actor_race->GetFormEditorID(), race->GetFormEditorID());
 
     for (const auto& race_info : race_infos) {
@@ -610,15 +613,15 @@ static bool get_is_race_table(RE::Actor* actor, RE::TESRace* race, void* a3, dou
           (race_is_in_vector(actor_race, race_info.mod_alt_races) &&
            race_is_in_vector(race, race_info.proxy_alt_races))) {
         auto [alt_race, alt_race_index] = get_alt_race(actor_race, race_info.mod_alt_races);
-        logger::info("GetIsRace Swap race: Proxy {} Mod {}",
-                     race_info.proxy_race->GetFormEditorID(),
-                     race_info.mod_race->GetFormEditorID());
-        if (alt_race_index != -1) {
-          logger::info("GetIsRace AltRace: {}", alt_race->GetFormEditorID());
-        }
+        // logger::info("GetIsRace Swap race: Proxy {} Mod {}",
+        //              race_info.proxy_race->GetFormEditorID(),
+        //              race_info.mod_race->GetFormEditorID());
+        // if (alt_race_index != -1) {
+        //   logger::info("GetIsRace AltRace: {}", alt_race->GetFormEditorID());
+        // }
         // swap function argument here
         auto race_for_swap = (race_info.proxy_race == race) ? race_info.mod_race : alt_race;
-        logger::info("GetIsRace race_for_swap: {}", race_for_swap->GetFormEditorID());
+        // logger::info("GetIsRace race_for_swap: {}", race_for_swap->GetFormEditorID());
         return get_is_race_table_(actor, race_for_swap, a3, ans);
       }
     }
@@ -638,15 +641,15 @@ static bool get_pc_is_race_table(RE::Actor* actor, RE::TESRace* race, void* a3, 
           (race_is_in_vector(actor_race, race_info.mod_alt_races) &&
            race_is_in_vector(race, race_info.proxy_alt_races))) {
         auto [alt_race, alt_race_index] = get_alt_race(actor_race, race_info.mod_alt_races);
-        logger::info("GetPCIsRace Swap race: Proxy {} Mod {}",
-                     race_info.proxy_race->GetFormEditorID(),
-                     race_info.mod_race->GetFormEditorID());
+        // logger::info("GetPCIsRace Swap race: Proxy {} Mod {}",
+        //              race_info.proxy_race->GetFormEditorID(),
+        //              race_info.mod_race->GetFormEditorID());
         if (alt_race_index != -1) {
-          logger::info("GetPCIsRace AltRace: {}", alt_race->GetFormEditorID());
+          // logger::info("GetPCIsRace AltRace: {}", alt_race->GetFormEditorID());
         }
         // swap function argument here
         auto race_for_swap = (race_info.proxy_race == race) ? race_info.mod_race : alt_race;
-        logger::info("GetPCIsRace race_for_swap: {}", race_for_swap->GetFormEditorID());
+        // logger::info("GetPCIsRace race_for_swap: {}", race_for_swap->GetFormEditorID());
         return get_pc_is_race_table_(actor, race_for_swap, a3, ans);
       }
     }
@@ -857,7 +860,7 @@ static void load_data()
           if (!alt_races_id_array->empty()) {
             logger::info("Toml array {} not empty", key);
 
-            alt_races_id_array->for_each([&alt_races_ids, key](auto&& form_id) {
+            alt_races_id_array->for_each([&alt_races_ids, key](auto form_id) {
               if constexpr (toml::is_number<decltype(form_id)>) {
                 logger::info("Toml raed array value {}: {}", key, *form_id);
                 alt_races_ids.push_back(static_cast<RE::FormID>(*form_id));
@@ -1018,16 +1021,16 @@ static void install_hooks()
   logger::info("Start install hooks");
   auto& trampoline = SKSE::GetTrampoline();
   trampoline.create(1024);
-  get_is_race_call_01_ = SKSE::GetTrampoline().write_call<5>(get_is_race_address_call_01, get_is_race_call_01);
-  get_is_race_call_02_ = SKSE::GetTrampoline().write_call<5>(get_is_race_address_call_02, get_is_race_call_02);
+  get_is_race_call_01_ = trampoline.write_call<5>(get_is_race_address_call_01, get_is_race_call_01);
+  get_is_race_call_02_ = trampoline.write_call<5>(get_is_race_address_call_02, get_is_race_call_02);
 
   // only skyrim se has
   if (REL::Module::GetRuntime() == REL::Module::Runtime::SE) {
-    get_is_race_jmp_01_ = SKSE::GetTrampoline().write_branch<5>(get_is_race_address_jmp_01, get_is_race_jmp_01);
+    get_is_race_jmp_01_ = trampoline.write_branch<5>(get_is_race_address_jmp_01, get_is_race_jmp_01);
   }
 
   set_race_papyrus_call_01_ =
-      SKSE::GetTrampoline().write_call<5>(set_race_papyrus_address_call_01, set_race_papyrus_call_01);
+      trampoline.write_call<5>(set_race_papyrus_address_call_01, set_race_papyrus_call_01);
   get_is_race_table_ = get_is_race_address_table.write_vfunc(0x0, get_is_race_table);
   get_pc_is_race_table_ = get_pc_is_race_address_table.write_vfunc(0x0, get_pc_is_race_table);
   write_hook_generic(get_race_base_papyrus_address.address(), 8, get_race_base_papyrus);
